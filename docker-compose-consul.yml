@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  consul-agent-1:
+    image: consul:latest
+    command: "agent -retry-join consul-server-bootstrap -client 0.0.0.0"
+    networks:
+      microexp:
+        ipv4_address: "172.25.0.21"
+
+  consul-agent-2:
+    image: consul:latest
+    command: "agent -retry-join consul-server-bootstrap -client 0.0.0.0"
+    networks:
+      microexp:
+        ipv4_address: "172.25.0.22"
+  consul-agent-3:
+    image: consul:latest
+    command: "agent -retry-join consul-server-bootstrap -client 0.0.0.0"
+    networks:
+      microexp:
+        ipv4_address: "172.25.0.23"
+
+  consul-server-1:
+    image: consul:latest
+    command: "agent -server -retry-join consul-server-bootstrap -client 0.0.0.0"
+    networks:
+      microexp:
+        ipv4_address: "172.25.0.24"
+
+  consul-server-2:
+    image: consul:latest
+    command: "agent -server -retry-join consul-server-bootstrap -client 0.0.0.0"
+    networks:
+      microexp:
+        ipv4_address: "172.25.0.25"
+
+  consul-server-bootstrap:
+    image: consul:latest
+    networks:
+      microexp:
+    ports:
+      - "8400:8400"
+      - "8500:8500"
+      - "8600:8600"
+      - "8600:8600/udp"
+    command: "agent -server -bootstrap-expect 3 -ui -client 0.0.0.0"
+
+networks:
+  microexp:
+    name: microexp
+    ipam:
+      driver: default
+      config: 
+        - subnet: "172.25.0.0/16"
